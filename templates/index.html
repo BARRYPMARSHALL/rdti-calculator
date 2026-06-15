@@ -372,6 +372,18 @@
       <div class="cta-section">
         <h3>📄 Get the Full Breakdown Report</h3>
         <p>Download a 2-page PDF with category breakdown, industry comparison, eligible vs ineligible analysis, and next steps.</p>
+        
+        <div class="referral-opt" style="margin-bottom:16px; text-align:left; max-width:420px; margin-left:auto; margin-right:auto;">
+          <label style="display:flex; align-items:flex-start; gap:10px; cursor:pointer; font-size:0.9rem; color:var(--gray-700);">
+            <input type="checkbox" id="referralCheck" onchange="toggleReferral()" style="margin-top:3px; width:18px; height:18px; accent-color:var(--blue);">
+            <span><strong>Connect me with a certified R&D accountant</strong> to file this claim (no obligation, free consultation)</span>
+          </label>
+          <div id="referralEmailWrap" style="display:none; margin-top:10px;">
+            <input type="email" id="referralEmail" placeholder="Your email for the referral" 
+                   style="width:100%; padding:10px 14px; border:2px solid var(--gray-200); border-radius:10px; font-size:0.95rem;">
+          </div>
+        </div>
+
         <button class="btn btn-primary" onclick="buyReport()">
           Download Full Report — $19
         </button>
@@ -519,40 +531,41 @@ function calculate() {
 
 // ─── Stripe Checkout ───────────────────────────────────────────────
 
-function buyReport() {
-  const inputs = getInputs();
-  const params = new URLSearchParams({
-    staff_count: inputs.staff_count,
-    avg_salary: inputs.avg_salary,
-    cloud_spend: inputs.cloud_spend,
-    contractor_spend: inputs.contractor_spend,
-    consumables_spend: inputs.consumables_spend,
-    licenses_spend: inputs.licenses_spend,
-    business_type: inputs.business_type,
-    turnover: inputs.turnover,
-  });
-
-  // Check if backend is available — if not, use Stripe Payment Link
-  fetch('/api/create-checkout', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(inputs),
-  })
-  .then(r => r.json())
-  .then(data => {
-    if (data.url) {
-      window.location.href = data.url;
-    } else {
-      // Fallback: direct to Stripe payment link
-      window.location.href = 'https://buy.stripe.com/PLACEHOLDER';
-    }
-  })
-  .catch(() => {
-    // Backend not available — redirect to Stripe Payment Link
-    window.location.href = 'https://buy.stripe.com/PLACEHOLDER';
-  });
+function toggleReferral() {
+  const wrap = document.getElementById('referralEmailWrap');
+  wrap.style.display = document.getElementById('referralCheck').checked ? 'block' : 'none';
+  if (document.getElementById('referralCheck').checked) {
+    setTimeout(() => document.getElementById('referralEmail').focus(), 100);
+  }
 }
 
+function buyReport() {
+  const referralOptIn = document.getElementById('referralCheck').checked;
+  
+  if (referralOptIn) {
+    const email = document.getElementById('referralEmail').value.trim();
+    if (!email || !email.includes('@')) {
+      alert('Enter your email so the accountant can reach you.');
+      document.getElementById('referralEmail').focus();
+      return;
+    }
+    // Capture lead before redirecting
+    const inputs = getInputs();
+    fetch('/api/referral-lead', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        email: email,
+        staff_count: inputs.staff_count,
+        refund_amount: document.getElementById('refund-amount')?.textContent?.replace(/[$,]/g, '') || 0,
+        business_type: inputs.business_type
+      })
+    }).catch(() => {}); // fire and forget — don't block the payment
+  }
+
+  // Direct link to Stripe Payment Link
+  window.location.href = 'https://buy.stripe.com/6oU28k1b2gABb1171r5AQ00';
+}
 // Auto-calculate on Enter
 document.addEventListener('DOMContentLoaded', function() {
   const inputs = document.querySelectorAll('input, select');
