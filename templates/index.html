@@ -108,6 +108,15 @@
     font-weight: 800;
     line-height: 1;
     margin: 8px 0;
+    word-break: break-word;
+  }
+  @media (max-width: 480px) {
+    .result-card .amount { font-size: 2.2rem; }
+    .result-card { padding: 20px 16px; }
+    .calc-section { padding: 24px 16px; }
+    header h1 { font-size: 1.6rem; }
+    header { padding: 40px 0 36px; }
+    .share-discount div { flex-direction: column; gap: 6px; }
   }
   .result-card .amount span { font-size: 1.5rem; opacity: 0.8; }
   .result-card .label { font-size: 0.95rem; opacity: 0.85; }
@@ -182,6 +191,29 @@
     padding: 10px 24px;
   }
   .btn-share:hover { border-color: var(--green); color: var(--green); }
+  
+  /* Qualify checklist */
+  .qualify-section {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding: 24px 28px;
+  }
+  .qualify-section h2 { font-size: 1.15rem; margin-bottom: 4px; color: var(--green); }
+  .qualify-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 24px;
+  }
+  @media (max-width: 640px) { .qualify-grid { grid-template-columns: 1fr; } }
+  .qualify-item {
+    font-size: 0.88rem;
+    color: var(--gray-700);
+    padding: 4px 0;
+  }
+
   .share-section {
     text-align: center;
     margin-top: 20px;
@@ -284,12 +316,27 @@
 <header>
   <div class="container">
     <div class="badge">⚡ ATO R&D Tax Incentive</div>
-    <h1>How Much Is the ATO Owing You?</h1>
-    <p>Answer 5 quick questions. Get your estimated refund in 30 seconds.<br>No email. No signup. Just the number.</p>
+    <h1>Get 43.5% of Your Software Development Costs Back in Cash</h1>
+    <p>Most Australian tech startups don't realise their engineering salaries and AWS bills qualify for the ATO's R&D Tax Incentive. Find out what you're owed in <strong>30 seconds</strong>.</p>
   </div>
 </header>
 
 <div class="container">
+
+  <!-- Eligibility checklist -->
+  <div class="qualify-section">
+    <h2>✅ Yes, Your Code Qualifies</h2>
+    <p style="color:var(--gray-500); font-size:0.9rem; margin-bottom:12px;">Software development IS R&D under ATO rules. What counts in 2026:</p>
+    <div class="qualify-grid">
+      <div class="qualify-item">✓ Software engineers, contractors &amp; founder salaries</div>
+      <div class="qualify-item">✓ AWS, Azure, GCP &amp; dev infrastructure bills</div>
+      <div class="qualify-item">✓ Building proprietary algorithms &amp; integrations</div>
+      <div class="qualify-item">✓ Dev tools, CI/CD, monitoring &amp; testing platforms</div>
+      <div class="qualify-item">✓ Scaling architecture &amp; performance optimisation</div>
+      <div class="qualify-item">✓ Project management for dev cycles (Jira, Linear)</div>
+    </div>
+  </div>
+
   <div class="calc-section">
     <h2 style="font-size:1.3rem; margin-bottom: 20px;">📋 Your Details</h2>
 
@@ -316,23 +363,23 @@
           <input type="number" id="turnover" placeholder="e.g. 3000000" min="0">
         </div>
         <div class="field">
-          <label>Technical staff count</label>
-          <div class="hint">Engineers, developers, scientists</div>
+          <label>Technical staff &amp; contractors</label>
+          <div class="hint">Engineers, developers, scientists — full-time equivalent</div>
           <input type="number" id="staff_count" placeholder="e.g. 4" min="0" value="4">
         </div>
         <div class="field">
-          <label>Average staff salary ($)</label>
-          <div class="hint">Including super, bonuses</div>
+          <label>Avg salary per person ($)</label>
+          <div class="hint">Including super, bonuses, on-costs</div>
           <input type="number" id="avg_salary" placeholder="e.g. 140000" min="0" value="140000">
         </div>
         <div class="field">
-          <label>Cloud / IT infrastructure ($/yr)</label>
-          <div class="hint">AWS, Azure, GCP, servers</div>
+          <label>Cloud / hosting spend ($/yr)</label>
+          <div class="hint">AWS, Azure, GCP, servers, CDN</div>
           <input type="number" id="cloud_spend" placeholder="e.g. 60000" min="0" value="60000">
         </div>
         <div class="field">
           <label>External contractors ($/yr)</label>
-          <div class="hint">Dev contractors, consultants</div>
+          <div class="hint">Dev contractors, agencies, consultants</div>
           <input type="number" id="contractor_spend" placeholder="e.g. 50000" min="0">
         </div>
         <div class="field">
@@ -341,8 +388,8 @@
           <input type="number" id="consumables_spend" placeholder="e.g. 5000" min="0">
         </div>
         <div class="field">
-          <label>Software licenses ($/yr)</label>
-          <div class="hint">Dev tools, CAD, scientific software</div>
+          <label>Dev tools &amp; software ($/yr)</label>
+          <div class="hint">IDE licenses, CI/CD, monitoring, SaaS tools</div>
           <input type="number" id="licenses_spend" placeholder="e.g. 12000" min="0">
         </div>
       </div>
@@ -436,18 +483,18 @@
   <div class="steps">
     <div class="step">
       <div class="step-num">1</div>
-      <h3>Answer 5 questions</h3>
-      <p>Staff, cloud, contractors, consumables, licenses. Takes 30 seconds.</p>
+      <h3>You Built Software</h3>
+      <p>You spent money on engineers, cloud infrastructure, and dev tools building your product this financial year.</p>
     </div>
     <div class="step">
       <div class="step-num">2</div>
-      <h3>Get your estimate</h3>
-      <p>Free instant calculation showing exactly what the ATO will refund.</p>
+      <h3>The Government Subsidises</h3>
+      <p>The ATO offers a <strong>43.5% refundable tax offset</strong> to encourage Australian tech innovation. It's not a deduction — it's cash.</p>
     </div>
     <div class="step">
       <div class="step-num">3</div>
-      <h3>Download full report</h3>
-      <p>2-page PDF with category breakdown, benchmarks, and next steps. $19.</p>
+      <h3>You Get Paid</h3>
+      <p>If you're pre-revenue or making a loss, this is paid as direct cash into your company bank account after you file.</p>
     </div>
   </div>
 </div>
