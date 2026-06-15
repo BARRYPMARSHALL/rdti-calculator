@@ -10,7 +10,8 @@ import os
 from datetime import datetime
 
 import stripe
-from flask import Flask, jsonify, request, send_file, render_template
+from flask import Flask, jsonify, request, send_file, render_template, session, redirect, url_for
+from functools import wraps
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 
@@ -20,10 +21,12 @@ from analytics import log_event, get_stats
 # ── Config ────────────────────────────────────────────────────────────
 
 app = Flask(__name__, template_folder="templates")
+app.secret_key = os.environ.get("FLASK_SECRET_KEY", "rdti-calc-secret-2026")
 
 STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "")
 STRIPE_PRICE_ID = os.environ.get("STRIPE_PRICE_ID", "price_rdti_report")
 DOMAIN = os.environ.get("DOMAIN", "http://localhost:5000")
+DASHBOARD_CODE = os.environ.get("DASHBOARD_CODE", "0794")
 
 if STRIPE_SECRET_KEY:
     stripe.api_key = STRIPE_SECRET_KEY
@@ -383,13 +386,42 @@ def _encode_params(data: dict) -> str:
 # ── Dashboard ─────────────────────────────────────────────────────────
 
 
+def login_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if not session.get("dashboard_authed"):
+            return redirect(url_for("dashboard_login"))
+        return f(*args, **kwargs)
+    return decorated
+
+
+@app.route("/dashboard/login", methods=["GET", "POST"])
+def dashboard_login():
+    """Simple login page for dashboard access."""
+    if request.method == "POST":
+        code = request.form.get("code", "")
+        if code == DASHBOARD_CODE:
+            session["dashboard_authed"] = True
+            return redirect(url_for("dashboard"))
+        return render_template("login.html", error="Invalid code")
+    return render_template("login.html", error=None)
+
+
+@app.route("/dashboard/logout")
+def dashboard_logout():
+    session.pop("dashboard_authed", None)
+    return redirect(url_for("dashboard_login"))
+
+
 @app.route("/dashboard")
+@login_required
 def dashboard():
     """Serve the analytics dashboard."""
     return render_template("dashboard.html")
 
 
 @app.route("/api/dashboard-stats")
+@login_required
 def api_dashboard_stats():
     """Return JSON dashboard stats."""
     days = request.args.get("days", 30, type=int)

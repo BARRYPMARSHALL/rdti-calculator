@@ -32,6 +32,8 @@
     gap: 12px;
   }
   .header h1 { font-size: 1.5rem; font-weight: 700; }
+  .header a { color: var(--muted); text-decoration: none; font-size: 0.8rem; }
+  .header a:hover { color: var(--text); }
   .header .period {
     display: flex;
     gap: 8px;
@@ -106,6 +108,7 @@
 
 <div class="header">
   <h1>📊 RDTI Dashboard</h1>
+  <a href="/dashboard/logout">Logout →</a>
   <div class="period">
     <button onclick="loadStats(7)" id="p7">7 days</button>
     <button onclick="loadStats(30)" class="active" id="p30">30 days</button>
