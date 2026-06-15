@@ -108,7 +108,6 @@
 
 <div class="header">
   <h1>📊 RDTI Dashboard</h1>
-  <a href="/dashboard/logout">Logout →</a>
   <div class="period">
     <button onclick="loadStats(7)" id="p7">7 days</button>
     <button onclick="loadStats(30)" class="active" id="p30">30 days</button>
@@ -128,13 +127,14 @@
 
 <script>
 let currentDays = 30;
+const accessCode = new URLSearchParams(window.location.search).get('code') || '';
 
 function loadStats(days) {
   currentDays = days;
   document.querySelectorAll('.period button').forEach(b => b.classList.remove('active'));
   document.getElementById('p' + days).classList.add('active');
 
-  fetch('/api/dashboard-stats?days=' + days)
+  fetch('/api/dashboard-stats?code=' + encodeURIComponent(accessCode) + '&days=' + days)
     .then(r => r.json())
     .then(render)
     .catch(err => {

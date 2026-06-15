@@ -54,20 +54,23 @@
     transition: background 0.2s;
   }
   .login-card button:hover { background: #059669; }
-  .error { color: #ef4444; font-size: 0.85rem; margin-top: 12px; }
 </style>
 </head>
 <body>
   <div class="login-card">
     <h1>🔐 RDTI Dashboard</h1>
     <p>Enter your access code</p>
-    <form method="POST">
-      <input type="password" name="code" maxlength="4" inputmode="numeric" autofocus>
-      <button type="submit">Unlock</button>
-    </form>
-    {% if error %}
-      <div class="error">{{ error }}</div>
-    {% endif %}
+    <input type="password" id="codeInput" maxlength="4" inputmode="numeric" autofocus
+           onkeydown="if(event.key==='Enter')go()">
+    <button onclick="go()">Unlock</button>
   </div>
+  <script>
+    function go() {
+      var code = document.getElementById('codeInput').value.trim();
+      if (code) {
+        window.location.href = '/dashboard?code=' + encodeURIComponent(code);
+      }
+    }
+  </script>
 </body>
 </html>
