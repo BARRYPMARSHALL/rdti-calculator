@@ -412,7 +412,20 @@
           </div>
         </div>
 
-        <button class="btn btn-primary" onclick="buyReport()">
+        <div class="share-discount" id="shareDiscount" style="margin-bottom:16px;">
+          <div style="display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap;">
+            <button class="btn btn-share" onclick="shareLinkedIn()" id="shareBtn">
+              🔗 Share on LinkedIn
+            </button>
+            <span style="color:var(--gray-500); font-size:0.85rem;">&</span>
+            <span id="discountBadge" style="background:#fef3c7; color:#92400e; padding:4px 12px; border-radius:20px; font-size:0.85rem; font-weight:600;">
+              Get 50% off 🎉
+            </span>
+          </div>
+          <p style="font-size:0.8rem; color:var(--gray-500); margin-top:6px;" id="shareStatus">Share on LinkedIn → unlock the half-price report</p>
+        </div>
+
+        <button class="btn btn-primary" onclick="buyReport()" id="buyBtn">
           Download Full Report — $19
         </button>
       </div>
@@ -575,8 +588,23 @@ function toggleReferral() {
   }
 }
 
+function shareLinkedIn() {
+  const url = encodeURIComponent('https://rdtcalculator.1st4.mobi');
+  window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + url, '_blank', 'width=600,height=600');
+  sessionStorage.setItem('sharedLinkedIn', 'true');
+  document.getElementById('shareBtn').innerHTML = '✅ Shared on LinkedIn';
+  document.getElementById('shareBtn').style.borderColor = 'var(--green)';
+  document.getElementById('shareBtn').style.color = 'var(--green)';
+  document.getElementById('shareStatus').textContent = '50% off unlocked! 🎉';
+  document.getElementById('discountBadge').style.background = '#d1fae5';
+  document.getElementById('discountBadge').style.color = '#065f46';
+  document.getElementById('discountBadge').textContent = '50% off — active! ✅';
+  document.getElementById('buyBtn').innerHTML = 'Download Full Report — $9.50';
+}
+
 function buyReport() {
   const referralOptIn = document.getElementById('referralCheck').checked;
+  const hasDiscount = sessionStorage.getItem('sharedLinkedIn') === 'true';
   
   if (referralOptIn) {
     const email = document.getElementById('referralEmail').value.trim();
@@ -585,7 +613,7 @@ function buyReport() {
       document.getElementById('referralEmail').focus();
       return;
     }
-    // Capture lead before redirecting
+    // Capture lead before checkout
     const inputs = getInputs();
     fetch('/api/referral-lead', {
       method: 'POST',
@@ -596,11 +624,47 @@ function buyReport() {
         refund_amount: document.getElementById('refund-amount')?.textContent?.replace(/[$,]/g, '') || 0,
         business_type: inputs.business_type
       })
-    }).catch(() => {}); // fire and forget — don't block the payment
+    }).catch(() => {});
   }
 
-  // Direct link to Stripe Payment Link
-  window.location.href = 'https://buy.stripe.com/6oU28k1b2gABb1171r5AQ00';
+  // Build payload for backend checkout
+  const inputs = getInputs();
+  const payload = {
+    discount: hasDiscount,
+    staff_count: inputs.staff_count,
+    avg_salary: inputs.avg_salary,
+    cloud_spend: inputs.cloud_spend,
+    contractor_spend: inputs.contractor_spend,
+    consumables_spend: inputs.consumables_spend,
+    licenses_spend: inputs.licenses_spend,
+    business_type: inputs.business_type,
+    turnover: inputs.turnover,
+  };
+
+  const btn = document.getElementById('buyBtn');
+  btn.textContent = '⏳ Opening checkout...';
+  btn.disabled = true;
+
+  fetch('/api/create-checkout', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(payload)
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      alert('Error: ' + (data.error || 'Could not create checkout'));
+      btn.textContent = hasDiscount ? 'Download Full Report — $9.50' : 'Download Full Report — $19';
+      btn.disabled = false;
+    }
+  })
+  .catch(err => {
+    alert('Network error — try again');
+    btn.textContent = hasDiscount ? 'Download Full Report — $9.50' : 'Download Full Report — $19';
+    btn.disabled = false;
+  });
 }
 
 function copyShare() {

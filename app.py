@@ -49,14 +49,28 @@ def api_calculate():
 def create_checkout():
     """Create Stripe Checkout Session for the full report."""
     data = request.get_json() or {}
+    discount = data.get("discount", False)
 
     if not STRIPE_SECRET_KEY:
-        # Dev mode — redirect to success directly
+        # Dev mode — redirect to PDF directly
         return jsonify({"url": f"{DOMAIN}/api/report?{_encode_params(data)}"})
 
     try:
+        if discount:
+            # 50% off — dynamic pricing
+            line_items = [{
+                "price_data": {
+                    "currency": "aud",
+                    "product_data": {"name": "RDTI Full Report (50% off)"},
+                    "unit_amount": 950,
+                },
+                "quantity": 1,
+            }]
+        else:
+            line_items = [{"price": STRIPE_PRICE_ID, "quantity": 1}]
+
         checkout_session = stripe.checkout.Session.create(
-            line_items=[{"price": STRIPE_PRICE_ID, "quantity": 1}],
+            line_items=line_items,
             mode="payment",
             success_url=f"{DOMAIN}/api/report?session_id={{CHECKOUT_SESSION_ID}}&{_encode_params(data)}",
             cancel_url=f"{DOMAIN}/",
