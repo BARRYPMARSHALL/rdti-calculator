@@ -3,8 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RDTI Calculator — How Much Is the ATO Owing You?</title>
-<meta name="description" content="Find out how much your R&D activity is worth in 30 seconds. Free estimate.">
+<title>RDTI Calculator — Get 43.5% of Dev Costs Back in Cash</title>
+<meta name="description" content="Find out how much the ATO owes you for engineering salaries, AWS, and dev tools. Free estimate in 30 seconds. Australian R&D Tax Incentive.">
+<meta property="og:title" content="Get 43.5% of Your Software Development Costs Back in Cash">
+<meta property="og:description" content="Most AU tech startups don't realise their engineering costs qualify for the ATO's R&D Tax Incentive. Check what you're owed in 30 seconds.">
+<meta property="og:url" content="https://rdtcalculator.1st4.mobi">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
@@ -33,6 +38,15 @@
   .container { max-width: 800px; margin: 0 auto; padding: 0 20px; }
 
   /* Header */
+  .deadline-banner {
+    background: #fef3c7;
+    color: #92400e;
+    text-align: center;
+    padding: 8px 16px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    border-bottom: 1px solid #fde68a;
+  }
   header {
     background: linear-gradient(135deg, #065f46, #059669, #0d9488);
     color: white;
@@ -248,6 +262,38 @@
   }
   .proof-header:hover { background: var(--gray-50); }
 
+  /* FAQ */
+  .faq-section {
+    background: white;
+    border-radius: 16px;
+    padding: 24px 28px;
+    margin: 24px 0;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  }
+  .faq-section h2 { font-size: 1.15rem; margin-bottom: 16px; }
+  .faq-item { border-bottom: 1px solid var(--gray-100); }
+  .faq-item:last-child { border-bottom: none; }
+  .faq-q {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 0;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.92rem;
+    color: var(--gray-700);
+    user-select: none;
+  }
+  .faq-q:hover { color: var(--green); }
+  .faq-arrow { font-size: 0.8rem; transition: transform 0.2s; }
+  .faq-a {
+    display: none;
+    padding: 0 0 14px;
+    font-size: 0.88rem;
+    color: var(--gray-500);
+    line-height: 1.5;
+  }
+
   /* Trust / Social Proof */
   .trust-bar {
     text-align: center;
@@ -336,6 +382,7 @@
 <body>
 
 <header>
+  <div class="deadline-banner">⚠️ AusIndustry applications close <strong>30 April</strong> — don't leave money on the table</div>
   <div class="container">
     <div class="badge">⚡ ATO R&D Tax Incentive</div>
     <h1>Get 43.5% of Your Software Development Costs Back in Cash</h1>
@@ -469,33 +516,37 @@
       <!-- Social proof: micro case studies -->
       <div class="proof-section">
         <div class="proof-header" onclick="toggleProof()">
-          <span>Still skeptical? See who's claimed 👇</span>
+          <span>✅ See who's claimed — real founder stories</span>
           <span id="proofArrow" style="transition:transform 0.2s;">▶</span>
         </div>
-        <div id="proofBody" style="display:none; margin-top:16px;">
-          <div style="background:#f0fdf4; border-radius:10px; padding:14px 16px; margin-bottom:14px; border-left:4px solid var(--green);">
+        <div style="padding:0 18px 14px;">
+          <!-- Case 1: always visible -->
+          <div style="background:#f0fdf4; border-radius:10px; padding:14px 16px; border-left:4px solid var(--green);">
             <div style="font-weight:700; font-size:0.9rem; color:var(--green); margin-bottom:2px;">💰 Pre-Seed FinTech (Sydney)</div>
             <div style="font-size:0.85rem; color:var(--gray-700); line-height:1.4;">
               "We were burning cash on AWS with two co-founders before launch. Didn't think we qualified. The calculator showed $42K — we filed and got the cheque within weeks."
             </div>
             <div style="font-weight:700; font-size:1rem; color:var(--gray-900); margin-top:6px;">$42,200 cash back — extended runway 4 months</div>
           </div>
-          <div style="background:#f0fdf4; border-radius:10px; padding:14px 16px; margin-bottom:14px; border-left:4px solid var(--green);">
-            <div style="font-weight:700; font-size:0.9rem; color:var(--green); margin-bottom:2px;">🚀 Growth AI Startup (Melbourne)</div>
-            <div style="font-size:0.85rem; color:var(--gray-700); line-height:1.4;">
-              "6 engineers building an AI logistics platform. Dev costs were our biggest expense. Claimed $185K back — hired another senior dev without raising a bridge round."
+          <!-- Cases 2 + 3: hidden until expanded -->
+          <div id="proofExtra" style="display:none; margin-top:14px;">
+            <div style="background:#f0fdf4; border-radius:10px; padding:14px 16px; margin-bottom:14px; border-left:4px solid var(--green);">
+              <div style="font-weight:700; font-size:0.9rem; color:var(--green); margin-bottom:2px;">🚀 Growth AI Startup (Melbourne)</div>
+              <div style="font-size:0.85rem; color:var(--gray-700); line-height:1.4;">
+                "6 engineers building an AI logistics platform. Dev costs were our biggest expense. Claimed $185K back — hired another senior dev without raising a bridge round."
+              </div>
+              <div style="font-weight:700; font-size:1rem; color:var(--gray-900); margin-top:6px;">$185,000 in offsets — hired without fundraising</div>
             </div>
-            <div style="font-weight:700; font-size:1rem; color:var(--gray-900); margin-top:6px;">$185,000 in offsets — hired without fundraising</div>
-          </div>
-          <div style="background:#f0fdf4; border-radius:10px; padding:14px 16px; margin-bottom:14px; border-left:4px solid var(--green);">
-            <div style="font-weight:700; font-size:0.9rem; color:var(--green); margin-bottom:2px;">🛠️ Dev Agency → Product (Brisbane)</div>
-            <div style="font-size:0.85rem; color:var(--gray-700); line-height:1.4;">
-              "40% of our internal team was building proprietary deployment tooling. Didn't realise internal product work qualifies. Got $68K back."
+            <div style="background:#f0fdf4; border-radius:10px; padding:14px 16px; margin-bottom:14px; border-left:4px solid var(--green);">
+              <div style="font-weight:700; font-size:0.9rem; color:var(--green); margin-bottom:2px;">🛠️ Dev Agency → Product (Brisbane)</div>
+              <div style="font-size:0.85rem; color:var(--gray-700); line-height:1.4;">
+                "40% of our internal team was building proprietary deployment tooling. Didn't realise internal product work qualifies. Got $68K back."
+              </div>
+              <div style="font-weight:700; font-size:1rem; color:var(--gray-900); margin-top:6px;">$68,000 refund on internal R&D</div>
             </div>
-            <div style="font-weight:700; font-size:1rem; color:var(--gray-900); margin-top:6px;">$68,000 refund on internal R&D</div>
-          </div>
-          <div style="background:var(--blue-light); border-radius:10px; padding:12px 16px; text-align:center; font-size:0.85rem; color:var(--blue);">
-            <strong>Backed by the Industry Innovation and Science Australia framework.</strong> Over <strong>$3 billion</strong> is paid out annually to Australian businesses.
+            <div style="background:var(--blue-light); border-radius:10px; padding:12px 16px; text-align:center; font-size:0.85rem; color:var(--blue);">
+              <strong>Backed by the Industry Innovation and Science Australia framework.</strong> Over <strong>$3 billion</strong> is paid out annually to Australian businesses.
+            </div>
           </div>
         </div>
       </div>
@@ -531,6 +582,11 @@
         <button class="btn btn-primary" onclick="buyReport()" id="buyBtn">
           Download Full Report — $19
         </button>
+        <div style="margin-top:10px; display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap; font-size:0.8rem; color:var(--gray-500);">
+          <span>🔒 Powered by Stripe</span>
+          <span>·</span>
+          <span>💡 Less than one AWS instance — 10,000x your money back</span>
+        </div>
       </div>
     </div>
   </div>
@@ -551,6 +607,29 @@
       <div class="step-num">3</div>
       <h3>You Get Paid</h3>
       <p>If you're pre-revenue or making a loss, this is paid as direct cash into your company bank account after you file.</p>
+    </div>
+  </div>
+</div>
+
+<!-- FAQ -->
+<div class="container">
+  <div class="faq-section">
+    <h2>❓ Common Questions</h2>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Will this trigger an ATO audit? <span class="faq-arrow">▶</span></div>
+      <div class="faq-a">No. The R&D Tax Incentive is an <strong>encouraged program</strong> — the ATO and AusIndustry want you to claim it. Over $3B is paid out annually. As long as your claim is documented, there is no elevated audit risk. This calculator gives you an estimate; a registered tax agent handles the actual filing.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">What if I haven't registered with AusIndustry yet? <span class="faq-arrow">▶</span></div>
+      <div class="faq-a">You register <strong>after</strong> the financial year ends but <strong>before 30 April</strong>. If you spent money on R&D this FY, you can still register and claim. You don't need to pre-register your activities — just document what you built.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Can I claim for past years? <span class="faq-arrow">▶</span></div>
+      <div class="faq-a">Yes — you can amend prior-year tax returns. If you missed claiming for FY24 or FY25, a registered tax agent can lodge an amended return. The 43.5% rate has been stable for years.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">I'm a sole founder with no employees — do I qualify? <span class="faq-arrow">▶</span></div>
+      <div class="faq-a">Yes. Your own technical salary, AWS costs, contractor payments, and dev tools all count. Many solo founders get $20K–$80K back. The calculator works for any company size.</div>
     </div>
   </div>
 </div>
@@ -791,7 +870,7 @@ function copyShare() {
 }
 
 function toggleProof() {
-  const body = document.getElementById('proofBody');
+  const body = document.getElementById('proofExtra');
   const arrow = document.getElementById('proofArrow');
   if (body.style.display === 'none') {
     body.style.display = 'block';
@@ -799,6 +878,20 @@ function toggleProof() {
   } else {
     body.style.display = 'none';
     arrow.style.transform = 'rotate(0deg)';
+  }
+}
+
+function toggleFaq(el) {
+  const answer = el.nextElementSibling;
+  const arrow = el.querySelector('.faq-arrow');
+  const isOpen = answer.style.display === 'block';
+  // Close all
+  document.querySelectorAll('.faq-a').forEach(a => a.style.display = 'none');
+  document.querySelectorAll('.faq-arrow').forEach(a => a.style.transform = 'rotate(0deg)');
+  // Open this one
+  if (!isOpen) {
+    answer.style.display = 'block';
+    arrow.style.transform = 'rotate(90deg)';
   }
 }
 // Auto-calculate on Enter
