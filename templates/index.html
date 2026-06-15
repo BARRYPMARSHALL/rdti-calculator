@@ -174,6 +174,25 @@
     background: var(--green);
     color: white;
   }
+  .btn-share {
+    background: white;
+    color: var(--gray-900);
+    border: 2px solid var(--gray-300);
+    font-size: 0.95rem;
+    padding: 10px 24px;
+  }
+  .btn-share:hover { border-color: var(--green); color: var(--green); }
+  .share-section {
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding: 20px;
+    background: white;
+    border-radius: 14px;
+    border: 2px dashed var(--gray-200);
+  }
+  .share-section h3 { font-size: 1rem; margin-bottom: 8px; color: var(--gray-700); }
+  .share-section p { font-size: 0.85rem; color: var(--gray-500); margin-bottom: 12px; }
 
   /* Trust / Social Proof */
   .trust-bar {
@@ -369,6 +388,15 @@
         <div style="margin-top:8px; font-weight:600; color:#92400e;" id="gap-amount"></div>
       </div>
 
+      <div class="share-section">
+        <h3>📢 Share Your Score</h3>
+        <p class="share-preview" id="sharePreview" style="background:var(--gray-100); border-radius:8px; padding:12px; font-size:0.85rem; text-align:left; margin-bottom:10px; color:var(--gray-700); border:1px solid var(--gray-200);"></p>
+        <button class="btn btn-share" onclick="copyShare()">
+          📋 Copy Post to Clipboard
+        </button>
+        <div id="copyNotice" style="display:none; margin-top:8px; font-size:0.85rem; color:var(--green); font-weight:600;">✅ Copied! Paste it on LinkedIn or X</div>
+      </div>
+
       <div class="cta-section">
         <h3>📄 Get the Full Breakdown Report</h3>
         <p>Download a 2-page PDF with category breakdown, industry comparison, eligible vs ineligible analysis, and next steps.</p>
@@ -527,6 +555,14 @@ function calculate() {
   const resultsDiv = document.getElementById('results');
   resultsDiv.classList.add('show');
   resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  // Update share preview
+  const refundStr = '$' + Math.round(refundAmount).toLocaleString();
+  const industryLabel = bench.label;
+  const shareText = 'Just ran my ' + industryLabel + ' through the RDTI calculator.\n\n' +
+    'The ATO owes us ' + refundStr + ' in R&D refunds.\n\n' +
+    'Check yours in 30 seconds → rdtcalculator.1st4.mobi';
+  document.getElementById('sharePreview').textContent = shareText;
 }
 
 // ─── Stripe Checkout ───────────────────────────────────────────────
@@ -565,6 +601,26 @@ function buyReport() {
 
   // Direct link to Stripe Payment Link
   window.location.href = 'https://buy.stripe.com/6oU28k1b2gABb1171r5AQ00';
+}
+
+function copyShare() {
+  const text = document.getElementById('sharePreview').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const notice = document.getElementById('copyNotice');
+    notice.style.display = 'block';
+    setTimeout(() => { notice.style.display = 'none'; }, 3000);
+  }).catch(() => {
+    // Fallback for older browsers
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    const notice = document.getElementById('copyNotice');
+    notice.style.display = 'block';
+    setTimeout(() => { notice.style.display = 'none'; }, 3000);
+  });
 }
 // Auto-calculate on Enter
 document.addEventListener('DOMContentLoaded', function() {
