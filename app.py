@@ -15,6 +15,7 @@ from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 
 from engine import calculate
+from analytics import log_event, get_stats
 
 # ── Config ────────────────────────────────────────────────────────────
 
@@ -34,6 +35,7 @@ if STRIPE_SECRET_KEY:
 @app.route("/")
 def index():
     """Serve the landing page."""
+    log_event("page_view")
     return render_template("index.html")
 
 
@@ -42,6 +44,11 @@ def api_calculate():
     """Calculate RDTI estimate from form data."""
     data = request.get_json() or {}
     result = calculate(data)
+    log_event("calculation", {
+        "business_type": data.get("business_type", ""),
+        "staff_count": data.get("staff_count", 0),
+        "refund_amount": result.get("results", {}).get("refundable_offset", 0),
+    })
     return jsonify(result)
 
 
@@ -76,6 +83,7 @@ def create_checkout():
             cancel_url=f"{DOMAIN}/",
             metadata=data,
         )
+        log_event("checkout", {"discount": discount, "amount_cents": 950 if discount else 1900})
         return jsonify({"url": checkout_session.url})
     except Exception as e:
         return jsonify({"error": str(e)}), 400
@@ -284,6 +292,13 @@ def download_report():
     pdf.save()
     buf.seek(0)
 
+    log_event("purchase", {
+        "business_type": data.get("business_type", ""),
+        "staff_count": data.get("staff_count", 0),
+        "refund_amount": r.get("refundable_offset", 0),
+        "revenue_cents": 950 if data.get("discount") else 1900,
+    })
+
     return send_file(
         buf,
         mimetype="application/pdf",
@@ -312,6 +327,12 @@ def referral_lead():
     os.makedirs("data", exist_ok=True)
     with open("data/referral_leads.jsonl", "a") as f:
         f.write(json.dumps(lead) + "\n")
+
+    log_event("referral_lead", {
+        "email": email,
+        "refund_amount": data.get("refund_amount", "0"),
+        "business_type": data.get("business_type", ""),
+    })
 
     return jsonify({"status": "captured"})
 
@@ -357,6 +378,22 @@ def _encode_params(data: dict) -> str:
         if val:
             parts.append(f"{req_key}={val}")
     return "&".join(parts)
+
+
+# ── Dashboard ─────────────────────────────────────────────────────────
+
+
+@app.route("/dashboard")
+def dashboard():
+    """Serve the analytics dashboard."""
+    return render_template("dashboard.html")
+
+
+@app.route("/api/dashboard-stats")
+def api_dashboard_stats():
+    """Return JSON dashboard stats."""
+    days = request.args.get("days", 30, type=int)
+    return jsonify(get_stats(days=days))
 
 
 # ── Main ──────────────────────────────────────────────────────────────
