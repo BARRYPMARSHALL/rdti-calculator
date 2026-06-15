@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RDTI Blog — Australian R&D Tax Incentive for Tech</title>
+<meta name="description" content="Learn how Australian software startups and SaaS founders can claim the 43.5% ATO R&D Tax Incentive refund. Guides, strategies, and eligibility explained.">
+<link rel="canonical" href="https://rdtcalculator.1st4.mobi/blog">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8fafc; color: #1a202c; line-height: 1.7; }
+.container { max-width: 800px; margin: 0 auto; padding: 20px; }
+header { background: #0a1628; color: white; padding: 40px 0; text-align: center; }
+header h1 { font-size: 2em; margin-bottom: 8px; }
+header p { color: #94a3b8; font-size: 1.05em; }
+header a { color: #60a5fa; text-decoration: none; }
+.post-card { background: white; border-radius: 12px; padding: 28px; margin: 20px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.08); transition: box-shadow 0.2s; }
+.post-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
+.post-card h2 { font-size: 1.35em; margin-bottom: 8px; }
+.post-card h2 a { color: #1a202c; text-decoration: none; }
+.post-card h2 a:hover { color: #2563eb; }
+.post-meta { color: #64748b; font-size: 0.9em; margin-bottom: 10px; }
+.post-card p { color: #475569; }
+.tags { margin-top: 10px; }
+.tag { display: inline-block; background: #eff6ff; color: #2563eb; padding: 3px 10px; border-radius: 12px; font-size: 0.8em; margin: 2px 3px 2px 0; }
+footer { text-align: center; padding: 40px 0; color: #94a3b8; font-size: 0.9em; }
+footer a { color: #2563eb; }
+</style>
+</head>
+<body>
+<header>
+  <div class="container">
+    <h1>📝 RDTI Blog</h1>
+    <p>Australian R&D Tax Incentive guides for software founders & SaaS teams</p>
+    <p><a href="/">← Back to Calculator</a></p>
+  </div>
+</header>
+<main class="container">
+  {% for post in posts %}
+  <div class="post-card">
+    <h2><a href="/blog/{{ post.slug }}">{{ post.title }}</a></h2>
+    <div class="post-meta">{{ post.date }} · {{ post.author }}</div>
+    <p>{{ post.summary }}</p>
+    <div class="tags">
+      {% for tag in post.tags %}
+      <span class="tag">{{ tag }}</span>
+      {% endfor %}
+    </div>
+  </div>
+  {% endfor %}
+</main>
+<footer>
+  <div class="container">
+    <p><a href="/">RDTI Calculator</a> · Built by <a href="https://1st4.mobi">1st4 Group</a></p>
+  </div>
+</footer>
+</body>
+</html>

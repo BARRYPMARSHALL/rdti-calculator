@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ post.title }} — RDTI Blog</title>
+<meta name="description" content="{{ post.summary }}">
+{% if post.tags %}
+<meta name="keywords" content="{{ post.tags | join(', ') }}">
+{% endif %}
+<link rel="canonical" href="https://rdtcalculator.1st4.mobi/blog/{{ post.slug }}">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8fafc; color: #1a202c; line-height: 1.8; font-size: 1.05em; }
+.container { max-width: 740px; margin: 0 auto; padding: 20px; }
+header { background: #0a1628; color: white; padding: 30px 0; }
+header a { color: #60a5fa; text-decoration: none; }
+.logo-bar { background: #0a1628; padding: 10px 0; text-align: center; border-bottom: 1px solid #1e293b; }
+.logo-bar a { color: #94a3b8; text-decoration: none; font-size: 0.9em; }
+article { background: white; padding: 40px; margin: 20px 0; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+article h1 { font-size: 1.8em; margin-bottom: 10px; line-height: 1.3; }
+article .meta { color: #64748b; font-size: 0.9em; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid #e2e8f0; }
+article h2 { font-size: 1.35em; margin: 28px 0 12px; color: #0a1628; }
+article h3 { font-size: 1.15em; margin: 22px 0 10px; color: #1e293b; }
+article p { margin-bottom: 16px; color: #334155; }
+article ul, article ol { margin: 12px 0 16px 24px; color: #334155; }
+article li { margin-bottom: 6px; }
+article strong { color: #1a202c; }
+article a { color: #2563eb; }
+article em { color: #475569; }
+.cta-box { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 24px; margin: 28px 0 10px; text-align: center; }
+.cta-box p { margin: 0; font-size: 1.05em; }
+.cta-box .button { display: inline-block; background: #2563eb; color: white; padding: 10px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin-top: 12px; }
+.cta-box .button:hover { background: #1d4ed8; }
+.tags { margin: 24px 0 0; padding-top: 20px; border-top: 1px solid #e2e8f0; }
+.tag { display: inline-block; background: #eff6ff; color: #2563eb; padding: 3px 12px; border-radius: 14px; font-size: 0.85em; margin: 2px 4px 2px 0; }
+nav { text-align: center; margin: 20px 0; }
+nav a { color: #2563eb; text-decoration: none; }
+footer { text-align: center; padding: 40px 0; color: #94a3b8; font-size: 0.85em; }
+footer a { color: #2563eb; }
+@media (max-width: 600px) {
+  article { padding: 20px; }
+  article h1 { font-size: 1.4em; }
+  .container { padding: 10px; }
+}
+</style>
+</head>
+<body>
+<div class="logo-bar">
+  <a href="/blog">← RDTI Blog</a> · <a href="/">RDTI Calculator</a>
+</div>
+<main class="container">
+  <article>
+    <h1>{{ post.title }}</h1>
+    <div class="meta">{{ post.date }} · {{ post.author }}</div>
+    {{ post.content | safe }}
+    <div class="tags">
+      {% for tag in post.tags %}
+      <span class="tag">{{ tag }}</span>
+      {% endfor %}
+    </div>
+  </article>
+  <nav><a href="/blog">← Back to all articles</a></nav>
+</main>
+<footer>
+  <div class="container">
+    <p><a href="/">RDTI Calculator</a> · Estimate your 43.5% ATO refund in 30 seconds</p>
+  </div>
+</footer>
+</body>
+</html>
