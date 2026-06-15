@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RDTI Calculator — How Much Is the ATO Owing You?</title>
+<meta name="description" content="Find out how much your R&D activity is worth in 30 seconds. Free estimate.">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --green: #059669;
+    --green-light: #d1fae5;
+    --blue: #2563eb;
+    --blue-light: #dbeafe;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-500: #6b7280;
+    --gray-700: #374151;
+    --gray-900: #111827;
+    --amber-50: #fffbeb;
+    --amber-500: #f59e0b;
+    --red-50: #fef2f2;
+    --red-500: #ef4444;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--gray-50);
+    color: var(--gray-900);
+    line-height: 1.6;
+  }
+  .container { max-width: 800px; margin: 0 auto; padding: 0 20px; }
+
+  /* Header */
+  header {
+    background: linear-gradient(135deg, #065f46, #059669, #0d9488);
+    color: white;
+    padding: 60px 0 50px;
+    text-align: center;
+  }
+  header h1 { font-size: 2.5rem; font-weight: 800; margin-bottom: 12px; line-height: 1.2; }
+  header p { font-size: 1.2rem; opacity: 0.9; max-width: 600px; margin: 0 auto; }
+  .badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.2);
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+    backdrop-filter: blur(4px);
+  }
+
+  /* Calculator Section */
+  .calc-section {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    margin-top: -30px;
+    padding: 40px;
+    position: relative;
+    z-index: 10;
+  }
+  .calc-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  @media (max-width: 640px) { .calc-grid { grid-template-columns: 1fr; } }
+  .field { margin-bottom: 4px; }
+  .field label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--gray-700);
+    margin-bottom: 4px;
+  }
+  .field .hint { font-size: 0.75rem; color: var(--gray-500); margin-bottom: 4px; }
+  .field input, .field select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 2px solid var(--gray-200);
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+    background: white;
+  }
+  .field input:focus, .field select:focus {
+    outline: none;
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(5,150,105,0.1);
+  }
+
+  /* Results */
+  .results { display: none; margin-top: 32px; }
+  .results.show { display: block; }
+  .result-card {
+    background: linear-gradient(135deg, #064e3b, #065f46);
+    color: white;
+    border-radius: 14px;
+    padding: 30px;
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  .result-card .amount {
+    font-size: 3.5rem;
+    font-weight: 800;
+    line-height: 1;
+    margin: 8px 0;
+  }
+  .result-card .amount span { font-size: 1.5rem; opacity: 0.8; }
+  .result-card .label { font-size: 0.95rem; opacity: 0.85; }
+  .result-card .rate-badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.15);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    margin-top: 8px;
+  }
+  .breakdown-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 20px 0;
+  }
+  @media (max-width: 640px) { .breakdown-grid { grid-template-columns: 1fr; } }
+  .breakdown-item {
+    background: var(--gray-50);
+    border-radius: 10px;
+    padding: 16px;
+  }
+  .breakdown-item .b-label { font-size: 0.8rem; color: var(--gray-500); }
+  .breakdown-item .b-value { font-size: 1.2rem; font-weight: 700; color: var(--gray-900); }
+  .gap-section {
+    background: var(--amber-50);
+    border-radius: 12px;
+    padding: 20px;
+    margin: 16px 0;
+    border-left: 4px solid var(--amber-500);
+  }
+  .gap-section h3 { color: #92400e; font-size: 0.95rem; margin-bottom: 8px; }
+  .gap-section ul { margin: 0; padding-left: 20px; }
+  .gap-section li { color: #92400e; font-size: 0.9rem; margin-bottom: 4px; }
+  
+  /* CTA */
+  .cta-section {
+    text-align: center;
+    margin-top: 24px;
+    padding: 24px;
+    background: var(--blue-light);
+    border-radius: 14px;
+  }
+  .cta-section h3 { color: var(--blue); font-size: 1.2rem; margin-bottom: 8px; }
+  .cta-section p { color: var(--gray-700); font-size: 0.9rem; margin-bottom: 16px; }
+  .btn {
+    display: inline-block;
+    padding: 14px 36px;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37,99,235,0.3); }
+  .btn-primary {
+    background: var(--blue);
+    color: white;
+  }
+  .btn-secondary {
+    background: var(--green);
+    color: white;
+  }
+
+  /* Trust / Social Proof */
+  .trust-bar {
+    text-align: center;
+    padding: 40px 0;
+  }
+  .trust-bar .number { font-size: 2rem; font-weight: 800; color: var(--green); }
+  .trust-bar .desc { font-size: 0.9rem; color: var(--gray-500); }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    padding: 30px 0;
+    color: var(--gray-500);
+    font-size: 0.85rem;
+    border-top: 1px solid var(--gray-200);
+    margin-top: 40px;
+  }
+  footer a { color: var(--green); text-decoration: none; }
+
+  /* Loading state */
+  .pulse { animation: pulse 1.5s ease-in-out infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+  /* Slider refinements */
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--gray-200);
+    outline: none;
+    padding: 0;
+    border: none;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--green);
+    cursor: pointer;
+    border: 3px solid white;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  }
+  .range-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .range-row input[type="number"] {
+    width: 100px;
+    flex-shrink: 0;
+    text-align: center;
+  }
+
+  /* Steps */
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding: 40px 0;
+  }
+  @media (max-width: 640px) { .steps { grid-template-columns: 1fr; } }
+  .step {
+    text-align: center;
+    padding: 20px;
+  }
+  .step-num {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--green);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    margin: 0 auto 12px;
+  }
+  .step h3 { font-size: 1rem; margin-bottom: 6px; }
+  .step p { font-size: 0.85rem; color: var(--gray-500); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <div class="badge">⚡ ATO R&D Tax Incentive</div>
+    <h1>How Much Is the ATO Owing You?</h1>
+    <p>Answer 5 quick questions. Get your estimated refund in 30 seconds.<br>No email. No signup. Just the number.</p>
+  </div>
+</header>
+
+<div class="container">
+  <div class="calc-section">
+    <h2 style="font-size:1.3rem; margin-bottom: 20px;">📋 Your Details</h2>
+
+    <form id="calcForm" onsubmit="return false;">
+      <div class="calc-grid">
+        <div class="field">
+          <label>What type of R&D do you do?</label>
+          <div class="hint">Your primary technical activity</div>
+          <select id="business_type">
+            <option value="software_development">SaaS / Software Development</option>
+            <option value="hardware_prototyping">Hardware / Electronics</option>
+            <option value="engineering_design">Engineering Design</option>
+            <option value="mining_tech">Mining Technology</option>
+            <option value="cleantech_energy">CleanTech / Energy</option>
+            <option value="manufacturing_process">Manufacturing Process</option>
+            <option value="biotech_pharma">Biotech / Pharma</option>
+            <option value="agritech">AgriTech</option>
+            <option value="defence_aerospace">Defence / Aerospace</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Annual turnover (optional)</label>
+          <div class="hint">Under $20M? You get the 43.5% rate</div>
+          <input type="number" id="turnover" placeholder="e.g. 3000000" min="0">
+        </div>
+        <div class="field">
+          <label>Technical staff count</label>
+          <div class="hint">Engineers, developers, scientists</div>
+          <input type="number" id="staff_count" placeholder="e.g. 4" min="0" value="4">
+        </div>
+        <div class="field">
+          <label>Average staff salary ($)</label>
+          <div class="hint">Including super, bonuses</div>
+          <input type="number" id="avg_salary" placeholder="e.g. 140000" min="0" value="140000">
+        </div>
+        <div class="field">
+          <label>Cloud / IT infrastructure ($/yr)</label>
+          <div class="hint">AWS, Azure, GCP, servers</div>
+          <input type="number" id="cloud_spend" placeholder="e.g. 60000" min="0" value="60000">
+        </div>
+        <div class="field">
+          <label>External contractors ($/yr)</label>
+          <div class="hint">Dev contractors, consultants</div>
+          <input type="number" id="contractor_spend" placeholder="e.g. 50000" min="0">
+        </div>
+        <div class="field">
+          <label>Consumables / materials ($/yr)</label>
+          <div class="hint">Lab supplies, prototyping materials</div>
+          <input type="number" id="consumables_spend" placeholder="e.g. 5000" min="0">
+        </div>
+        <div class="field">
+          <label>Software licenses ($/yr)</label>
+          <div class="hint">Dev tools, CAD, scientific software</div>
+          <input type="number" id="licenses_spend" placeholder="e.g. 12000" min="0">
+        </div>
+      </div>
+
+      <div style="text-align:center; margin-top: 24px;">
+        <button type="button" class="btn btn-secondary" onclick="calculate()">
+          ⚡ Calculate My Refund
+        </button>
+      </div>
+    </form>
+
+    <!-- Results (hidden until calculated) -->
+    <div class="results" id="results">
+      <div class="result-card">
+        <div class="label">Estimated ATO Refund</div>
+        <div class="amount" id="refund-amount">$0</div>
+        <div class="label" id="refund-detail">Based on <span id="eligible-spend">$0</span> eligible R&D spend</div>
+        <div class="rate-badge" id="rate-badge">Refund rate: 43.5% (SME)</div>
+      </div>
+
+      <div class="breakdown-grid">
+        <div class="breakdown-item">
+          <div class="b-label">Core R&D Activities</div>
+          <div class="b-value" id="core-spend">$0</div>
+        </div>
+        <div class="breakdown-item">
+          <div class="b-label">Supporting Activities</div>
+          <div class="b-value" id="support-spend">$0</div>
+        </div>
+        <div class="breakdown-item">
+          <div class="b-label">Est. Consulting Fee (20%)</div>
+          <div class="b-value" id="consulting-fee">$0</div>
+        </div>
+        <div class="breakdown-item">
+          <div class="b-label">Industry Benchmark</div>
+          <div class="b-value" id="benchmark-text">—</div>
+        </div>
+      </div>
+
+      <div class="gap-section" id="gap-section" style="display:none;">
+        <h3>💡 Potential Overlooked Spend</h3>
+        <ul id="gap-list"></ul>
+        <div style="margin-top:8px; font-weight:600; color:#92400e;" id="gap-amount"></div>
+      </div>
+
+      <div class="cta-section">
+        <h3>📄 Get the Full Breakdown Report</h3>
+        <p>Download a 2-page PDF with category breakdown, industry comparison, eligible vs ineligible analysis, and next steps.</p>
+        <button class="btn btn-primary" onclick="buyReport()">
+          Download Full Report — $19
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- How it works -->
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <h3>Answer 5 questions</h3>
+      <p>Staff, cloud, contractors, consumables, licenses. Takes 30 seconds.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <h3>Get your estimate</h3>
+      <p>Free instant calculation showing exactly what the ATO will refund.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <h3>Download full report</h3>
+      <p>2-page PDF with category breakdown, benchmarks, and next steps. $19.</p>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <p>RDTI Calculator — part of <a href="https://1st4.mobi">1st4 Group</a> | Barry Marshall</p>
+    <p style="margin-top:4px;">This is an estimate. Engage a registered tax agent for your actual application.</p>
+  </div>
+</footer>
+
+<script>
+// ─── Calculation Engine (client-side) ───────────────────────────────
+
+function getInputs() {
+  return {
+    business_type: document.getElementById('business_type').value,
+    staff_count: parseFloat(document.getElementById('staff_count').value) || 0,
+    avg_salary: parseFloat(document.getElementById('avg_salary').value) || 0,
+    cloud_spend: parseFloat(document.getElementById('cloud_spend').value) || 0,
+    contractor_spend: parseFloat(document.getElementById('contractor_spend').value) || 0,
+    consumables_spend: parseFloat(document.getElementById('consumables_spend').value) || 0,
+    licenses_spend: parseFloat(document.getElementById('licenses_spend').value) || 0,
+    turnover: parseFloat(document.getElementById('turnover').value) || 0,
+  };
+}
+
+function calculate() {
+  const inputs = getInputs();
+
+  // Check at least some staff or spend
+  if (inputs.staff_count === 0 && inputs.cloud_spend === 0 && inputs.contractor_spend === 0) {
+    alert('Enter at least 1 technical staff member or some eligible spend.');
+    return;
+  }
+
+  // R&D eligibility assumptions (same as Python engine)
+  const staffWages = inputs.staff_count * inputs.avg_salary;
+  const staffEligible = staffWages * 0.80;
+  const cloudEligible = inputs.cloud_spend * 0.70;
+  const contractorEligible = inputs.contractor_spend * 0.75;
+  const consumablesEligible = inputs.consumables_spend * 0.80;
+  const licensesEligible = inputs.licenses_spend * 0.60;
+
+  const totalEligible = staffEligible + cloudEligible + contractorEligible + consumablesEligible + licensesEligible;
+  const isSME = inputs.turnover < 20000000 || inputs.turnover === 0;
+  const refundRate = isSME ? 0.435 : 0.30;
+  const refundAmount = totalEligible * refundRate;
+  const consultingFee = Math.min(refundAmount * 0.20, 50000);
+  const coreSpend = staffEligible + contractorEligible;
+  const supportSpend = cloudEligible + consumablesEligible + licensesEligible;
+
+  // Industry benchmarks
+  const benchmarks = {
+    software_development: { label: 'SaaS / Software', perStaff: 42000 },
+    hardware_prototyping: { label: 'Hardware / Electronics', perStaff: 55000 },
+    engineering_design: { label: 'Engineering', perStaff: 48000 },
+    mining_tech: { label: 'Mining Tech', perStaff: 60000 },
+    cleantech_energy: { label: 'CleanTech / Energy', perStaff: 52000 },
+    manufacturing_process: { label: 'Manufacturing', perStaff: 38000 },
+    biotech_pharma: { label: 'Biotech / Pharma', perStaff: 65000 },
+    agritech: { label: 'AgriTech', perStaff: 40000 },
+    defence_aerospace: { label: 'Defence / Aerospace', perStaff: 58000 },
+  };
+  const bench = benchmarks[inputs.business_type] || benchmarks.software_development;
+  const refundPerStaff = inputs.staff_count > 0 ? refundAmount / inputs.staff_count : 0;
+  let benchMsg = '';
+  if (refundPerStaff > bench.perStaff * 1.2) benchMsg = '✅ Above industry average';
+  else if (refundPerStaff > bench.perStaff * 0.8) benchMsg = '👍 In line with average';
+  else benchMsg = '⚠️ Below industry average';
+
+  // Gap analysis
+  const gapNotes = [];
+  let totalGap = 0;
+  if (inputs.consumables_spend < staffWages * 0.05 && staffWages > 0) {
+    const g = staffWages * 0.10;
+    totalGap += g;
+    gapNotes.push('Consumables (~$' + g.toLocaleString() + ' in materials might qualify)');
+  }
+  if (inputs.cloud_spend < staffWages * 0.10 && inputs.business_type === 'software_development' && staffWages > 0) {
+    const g = staffWages * 0.15;
+    totalGap += g;
+    gapNotes.push('Cloud infrastructure (~$' + g.toLocaleString() + ' in AWS/Azure is often eligible)');
+  }
+  if (inputs.licenses_spend < staffWages * 0.03 && staffWages > 0) {
+    const g = staffWages * 0.05;
+    totalGap += g;
+    gapNotes.push('Software licenses (~$' + g.toLocaleString() + ' in dev tools could qualify)');
+  }
+
+  // Render results
+  document.getElementById('refund-amount').textContent = '$' + Math.round(refundAmount).toLocaleString();
+  document.getElementById('eligible-spend').textContent = '$' + Math.round(totalEligible).toLocaleString();
+  document.getElementById('refund-detail').innerHTML =
+    'Based on <span id="eligible-spend">$' + Math.round(totalEligible).toLocaleString() +
+    '</span> eligible R&D spend';
+  document.getElementById('rate-badge').textContent =
+    'Refund rate: ' + (refundRate * 100) + '% (' + (isSME ? 'SME' : 'Standard') + ')';
+
+  document.getElementById('core-spend').textContent = '$' + Math.round(coreSpend).toLocaleString();
+  document.getElementById('support-spend').textContent = '$' + Math.round(supportSpend).toLocaleString();
+  document.getElementById('consulting-fee').textContent = '$' + Math.round(consultingFee).toLocaleString();
+  document.getElementById('benchmark-text').textContent = bench.label + ' — ' + benchMsg;
+
+  // Gap section
+  const gapSection = document.getElementById('gap-section');
+  const gapList = document.getElementById('gap-list');
+  const gapAmount = document.getElementById('gap-amount');
+  if (gapNotes.length > 0) {
+    gapSection.style.display = 'block';
+    gapList.innerHTML = gapNotes.map(n => '<li>' + n + '</li>').join('');
+    gapAmount.textContent = 'Potential additional refund: ~$' + Math.round(totalGap * 0.435).toLocaleString();
+  } else {
+    gapSection.style.display = 'none';
+  }
+
+  // Show results with animation
+  const resultsDiv = document.getElementById('results');
+  resultsDiv.classList.add('show');
+  resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ─── Stripe Checkout ───────────────────────────────────────────────
+
+function buyReport() {
+  const inputs = getInputs();
+  const params = new URLSearchParams({
+    staff_count: inputs.staff_count,
+    avg_salary: inputs.avg_salary,
+    cloud_spend: inputs.cloud_spend,
+    contractor_spend: inputs.contractor_spend,
+    consumables_spend: inputs.consumables_spend,
+    licenses_spend: inputs.licenses_spend,
+    business_type: inputs.business_type,
+    turnover: inputs.turnover,
+  });
+
+  // Check if backend is available — if not, use Stripe Payment Link
+  fetch('/api/create-checkout', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(inputs),
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      // Fallback: direct to Stripe payment link
+      window.location.href = 'https://buy.stripe.com/PLACEHOLDER';
+    }
+  })
+  .catch(() => {
+    // Backend not available — redirect to Stripe Payment Link
+    window.location.href = 'https://buy.stripe.com/PLACEHOLDER';
+  });
+}
+
+// Auto-calculate on Enter
+document.addEventListener('DOMContentLoaded', function() {
+  const inputs = document.querySelectorAll('input, select');
+  inputs.forEach(el => {
+    el.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') calculate();
+    });
+  });
+});
+</script>
+</body>
+</html>
